@@ -8,40 +8,48 @@ export default class App extends Component {
   //mounting methods
   constructor(props) {
     super(props)
-    this.state = { todos: [], count: 0 }
-    console.log("constructor called")
+    this.state = { todos: [] }
+
   }
   componentDidMount() {
-    console.log("component did mount called")
+    this.getTodos()
   }
-  //updating methods
-  shouldComponentUpdate(nextProps, nextState) {
 
-    console.log("should update called")
-    console.log(nextState)
-    return (nextState.count < 5)
-  }
-  componentDidUpdate() {
-    console.log("did update called")
-  }
   render() {
-    console.log("render called")
+    console.log(this.state.todos)
     return (
       <div className="App">
-        <AddTodoForm buttonText="parent button text" />
-        <TodosComponent />
-        <div>{this.state.count}</div>
-        <button onClick={this.onClick}>click me</button>
+        <AddTodoForm buttonText="parent button text" addTodo={this.addTodo} />
+        <TodosComponent todos={this.state.todos} />
       </div >
     )
   }
-  onClick = () => {
-
-    this.setState({
-      count: this.state.count + 1
+  addTodo = async (description) => {
+    await fetch("todos", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ description })
+    }).then(res => res.json()).then(jsonRes => {
+      console.log(jsonRes)
+      this.setState(
+        {
+          todos: [...this.state.todos, jsonRes]
+        }
+      )
     })
-    console.log(this.state.count)
   }
+  async getTodos() {
+    const response = await fetch("todos")
+    const jsonResponse = await response.json()
+    this.setState({
+      todos: jsonResponse.todos
+    })
+
+  }
+
 
 }
 
