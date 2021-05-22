@@ -8,7 +8,7 @@ export default class App extends Component {
   //mounting methods
   constructor(props) {
     super(props)
-    this.state = { todos: [] }
+    this.state = { todos: [], loading: true }
 
   }
   componentDidMount() {
@@ -17,10 +17,11 @@ export default class App extends Component {
 
   render() {
     console.log(this.state.todos)
+    const todosss = this.state.loading ? <h2>loading</h2> : <TodosComponent todos={this.state.todos} delTodo={this.delTodo} editTodo={this.editTodo} />
     return (
       <div className="App">
         <AddTodoForm buttonText="parent button text" addTodo={this.addTodo} />
-        <TodosComponent todos={this.state.todos} delTodo={this.delTodo} editTodo={this.editTodo} />
+        {todosss}
       </div >
     )
   }
@@ -85,7 +86,8 @@ export default class App extends Component {
     const response = await fetch("todos")
     const jsonResponse = await response.json()
     this.setState({
-      todos: jsonResponse.todos
+      todos: jsonResponse.todos,
+      loading: false
     })
 
   }
