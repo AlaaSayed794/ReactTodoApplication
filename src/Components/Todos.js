@@ -16,9 +16,9 @@ export default function Todos(props) {
                     {
                         props.todos.map(todo =>
                             <tr key={todo.id}>
-                                <td><input type="checkbox" checked={todo.completed} /></td>
+                                <td><input onChange={() => props.editTodo(todo)} type="checkbox" checked={todo.completed} /></td>
                                 <td>{todo.description}</td>
-                                <td><button>x</button></td>
+                                <td><button onClick={() => props.delTodo(todo.id)}>x</button></td>
                             </tr>
                         )
                     }
@@ -27,4 +27,5 @@ export default function Todos(props) {
         </div>
     )
 }
+
 
