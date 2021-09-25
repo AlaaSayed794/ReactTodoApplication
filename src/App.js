@@ -1,97 +1,27 @@
-import './App.css';
-import TodosComponent from './Components/Todos'
-import AddTodoForm from './Components/AddTodos'
-
-import React, { Component } from 'react'
-
-export default class App extends Component {
-  //mounting methods
-  constructor(props) {
-    super(props)
-    this.state = { todos: [], loading: true }
-
-  }
+import React, { Component } from 'react';
+import { getTodos } from './actions/todosActions'
+import { connect } from 'react-redux';
+import Todos from './componenets/Todos';
+import AddTodo from './componenets/AddTodo';
+class App extends Component {
+  state = { loading: true }
   componentDidMount() {
-    this.getTodos()
+    this.props.getTodos()
+    this.setState({ loading: false })
   }
-
   render() {
-    console.log(this.state.todos)
-    const todosss = this.state.loading ? <h2>loading</h2> : <TodosComponent todos={this.state.todos} delTodo={this.delTodo} editTodo={this.editTodo} />
     return (
-      <div className="App">
-        <AddTodoForm buttonText="parent button text" addTodo={this.addTodo} />
-        {todosss}
-      </div >
-    )
+      this.state.loading ? <h1>loading</h1> :
+        <>
+          <h1>Todo app</h1>
+          <AddTodo />
+          <Todos />
+        </>
+    );
   }
-  addTodo = async (description) => {
-    await fetch("todos", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ description })
-    }).then(res => res.json()).then(jsonRes => {
-      console.log(jsonRes)
-      this.setState(
-        {
-          todos: [...this.state.todos, jsonRes]
-        }
-      )
-    })
-  }
-
-  delTodo = async (id) => {
-    await fetch("todos/" + id, {
-      method: "DELETE",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      }
-    }).then(res => res.json()).then(jsonRes => {
-      this.setState(
-        {
-          todos: this.state.todos.filter(todo => todo.id !== id)
-        }
-      )
-    })
-  }
-
-  editTodo = async (todo) => {
-    await fetch("todos/" + todo.id, {
-      method: "PATCH",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ completed: !todo.completed })
-    }).then(res => res.json()).then(jsonRes => {
-      this.setState(
-        {
-          todos: this.state.todos.map(Todo => {
-            if (Todo.id === todo.id) {
-              Todo.completed = !Todo.completed
-            }
-            return Todo
-          })
-        }
-      )
-    })
-  }
-
-
-  async getTodos() {
-    const response = await fetch("todos")
-    const jsonResponse = await response.json()
-    this.setState({
-      todos: jsonResponse.todos,
-      loading: false
-    })
-
-  }
-
-
 }
 
+
+
+
+export default connect(null, { getTodos })(App);
